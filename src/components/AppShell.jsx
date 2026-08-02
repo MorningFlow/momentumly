@@ -12,10 +12,10 @@ export default function AppShell() {
   const { todaysCompletionPct } = useApp()
 
   return (
-    <div className="mobile-col" style={{ 
-      display: 'flex', minHeight: '100vh', 
+    <div className="mobile-col app-container" style={{ 
+      display: 'flex',
       background: 'linear-gradient(135deg, #051417 0%, #0b2229 50%, #04090b 100%)', 
-      color: '#f0f4f8', fontFamily: 'Inter', position: 'relative', overflow: 'hidden' 
+      color: '#f0f4f8', fontFamily: 'Inter', position: 'relative' 
     }}>
       
       {/* Ambient Glows (Much stronger so glassmorphism catches them) */}

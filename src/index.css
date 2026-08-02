@@ -187,6 +187,15 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+/* Base Layout Classes */
+.app-container {
+  height: 100vh;
+  overflow: hidden;
+}
+.main-content {
+  overflow-y: auto;
+}
+
 /* --- Mobile Responsive Layouts --- */
 @media (max-width: 768px) {
   .mobile-col { flex-direction: column !important; }
@@ -199,7 +208,15 @@ input[type="number"] {
     border-top: 1px solid rgba(255,255,255,0.08); z-index: 50; justify-content: space-around; align-items: center; padding: 0 16px;
   }
   
-  .main-content { padding-bottom: 90px !important; overflow-y: auto; overscroll-behavior: none; -webkit-overflow-scrolling: touch; }
+  .app-container {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+  .main-content { 
+    padding-bottom: 90px !important; 
+    overflow-y: visible; 
+  }
   
   .mobile-p-16 { padding: 16px !important; }
   .mobile-header { padding: 0 16px !important; }
