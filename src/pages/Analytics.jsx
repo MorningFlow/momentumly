@@ -37,6 +37,7 @@ export default function Analytics() {
       })
     }
   }
+  allKpis.sort((a, b) => a.label.localeCompare(b.label))
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', maxWidth: '1200px', margin: '0 auto' }}>

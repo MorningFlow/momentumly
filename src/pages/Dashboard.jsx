@@ -26,8 +26,10 @@ export default function Dashboard() {
           borderRadius: '24px', overflow: 'hidden', 
           boxShadow: '0 24px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)' 
         }}>
-          {Object.entries(metrics).map(([key, metric], index) => {
-            const isLast = index === Object.keys(metrics).length - 1
+          {Object.entries(metrics)
+            .sort(([, a], [, b]) => a.label.localeCompare(b.label))
+            .map(([key, metric], index, array) => {
+            const isLast = index === array.length - 1
             const progressPct = Math.min(100, Math.round((metric.value / metric.target) * 100))
             return (
               <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '20px 24px', borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.04)' }}>

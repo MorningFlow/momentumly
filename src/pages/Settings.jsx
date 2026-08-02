@@ -74,7 +74,9 @@ export default function Settings() {
             <div key={category}>
               <h3 style={{ fontSize: '14px', color: 'rgba(180, 200, 200, 0.8)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>{category}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {Object.entries(metrics).map(([key, metric]) => (
+                {Object.entries(metrics)
+                  .sort(([, a], [, b]) => a.label.localeCompare(b.label))
+                  .map(([key, metric]) => (
                   <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '12px' }}>
                     <div style={{ fontSize: '14px', color: '#f0f4f8' }}>{metric.label}</div>
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
