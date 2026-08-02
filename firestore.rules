@@ -1,0 +1,54 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ──────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // ── Users ─────────────────────────────────────────────────────────
+    // Each user can only read/write their own profile document
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+
+    // ── Metrics ───────────────────────────────────────────────────────
+    // Daily KPI snapshots — any authenticated user can read
+    // Only write via backend (or owner for now)
+    match /metrics/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // ── Pipeline (CRM deals) ──────────────────────────────────────────
+    match /pipeline/{dealId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // ── Outreach log ──────────────────────────────────────────────────
+    match /outreach/{entryId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // ── Monthly targets ───────────────────────────────────────────────
+    match /targets/{month} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // ── Scorecard entries ─────────────────────────────────────────────
+    match /scorecard/{docId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
