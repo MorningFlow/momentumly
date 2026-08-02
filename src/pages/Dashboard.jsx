@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { useApp } from '../store/appStore'
 import { GlowCard } from '../components/ui/spotlight-card'
 
@@ -19,6 +19,7 @@ function buildDayWindow(numDays = 14) {
 }
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
 // ── component ─────────────────────────────────────────────────────────────────
 export default function Dashboard() {
@@ -27,7 +28,17 @@ export default function Dashboard() {
   const todayStr = dateKey(new Date())
   const [selectedDay, setSelectedDay] = useState(todayStr)
 
+  const [calOpen, setCalOpen] = useState(false)
+  const calRef = useRef(null)
   const days = useMemo(() => buildDayWindow(14), [])
+
+  // Close calendar on outside click
+  useEffect(() => {
+    if (!calOpen) return
+    const handler = (e) => { if (calRef.current && !calRef.current.contains(e.target)) setCalOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [calOpen])
 
   // Snapshot lookup: { 'YYYY-MM-DD': snapshotData }
   const snapshotMap = useMemo(() => {
@@ -169,77 +180,176 @@ export default function Dashboard() {
         ]
       : []
 
-  // ── date strip ────────────────────────────────────────────────────────────
-  const renderDateStrip = () => (
-    <div style={{
-      display: 'inline-flex', alignItems: 'center', gap: '4px',
-      background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(16px)',
-      border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px',
-      padding: '6px 12px', overflowX: 'auto', scrollbarWidth: 'none',
-      marginBottom: '0', alignSelf: 'flex-start', width: 'fit-content'
-    }}>
-      <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'rgba(180,200,200,0.5)', flexShrink: 0, marginRight: '4px' }}>calendar_today</span>
-      {days.map(d => {
-        const key = dateKey(d)
-        const isT = key === todayStr
-        const isSel = key === selectedDay
-        const hasSnap = !!snapshotMap[key]
-        const dayLabel = DAY_LABELS[d.getDay()]
-        const dateNum = d.getDate()
-        const isPast = key < todayStr
+  // ── collapsible date header ────────────────────────────────────────────────
+  const renderDateHeader = () => {
+    const selDate = new Date(selectedDay + 'T00:00:00')
+    const isT = isToday
+    const dayName = DAY_LABELS[selDate.getDay()]
+    const dateNum = selDate.getDate()
+    const monthName = MONTH_NAMES[selDate.getMonth()]
+    const year = selDate.getFullYear()
 
-        let bg = 'transparent'
-        let color = 'rgba(180,200,200,0.45)'
-        let border = '1px solid transparent'
-        let dotColor = 'transparent'
+    return (
+      <div ref={calRef} style={{ position: 'relative' }}>
+        {/* ── Big Date Button ── */}
+        <button
+          onClick={() => setCalOpen(o => !o)}
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            background: isT
+              ? 'linear-gradient(135deg, rgba(45,212,191,0.07) 0%, rgba(45,212,191,0.02) 100%)'
+              : 'linear-gradient(135deg, rgba(224,169,109,0.07) 0%, rgba(224,169,109,0.02) 100%)',
+            border: isT ? '1px solid rgba(45,212,191,0.2)' : '1px solid rgba(224,169,109,0.25)',
+            borderRadius: '20px', padding: '16px 24px',
+            cursor: 'pointer', transition: 'all 0.25s ease',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
+          }}
+        >
+          {/* Left: Date block */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            {/* Big date number */}
+            <div style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              width: '52px', height: '52px', borderRadius: '14px',
+              background: isT ? 'rgba(45,212,191,0.12)' : 'rgba(224,169,109,0.12)',
+              border: isT ? '1px solid rgba(45,212,191,0.25)' : '1px solid rgba(224,169,109,0.25)',
+            }}>
+              <span style={{ fontSize: '22px', fontWeight: 700, color: isT ? '#2DD4BF' : '#e0a96d', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{dateNum}</span>
+            </div>
+            {/* Day & Month */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', textAlign: 'left' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: isT ? 'rgba(45,212,191,0.7)' : 'rgba(224,169,109,0.7)' }}>
+                {isT ? 'Today' : 'Historical'}
+              </span>
+              <span style={{ fontSize: '18px', fontWeight: 600, color: '#f0f4f8', letterSpacing: '-0.01em' }}>
+                {dayName}, {monthName}
+              </span>
+              <span style={{ fontSize: '12px', color: 'rgba(180,200,200,0.45)', fontVariantNumeric: 'tabular-nums' }}>
+                {year}
+              </span>
+            </div>
+          </div>
 
-        if (isT) {
-          bg = isSel ? 'rgba(45,212,191,0.18)' : 'rgba(45,212,191,0.08)'
-          color = '#2DD4BF'
-          border = `1px solid ${isSel ? 'rgba(45,212,191,0.5)' : 'rgba(45,212,191,0.2)'}`
-        } else if (isSel) {
-          bg = 'rgba(224,169,109,0.14)'
-          color = '#e0a96d'
-          border = '1px solid rgba(224,169,109,0.4)'
-        } else if (hasSnap) {
-          color = 'rgba(180,200,200,0.75)'
-          dotColor = '#52b788'
-        } else if (isPast) {
-          color = 'rgba(180,200,200,0.3)'
-        }
+          {/* Right: chevron + live dot */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {isT && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(82,183,136,0.1)', border: '1px solid rgba(82,183,136,0.25)', borderRadius: '999px', padding: '4px 10px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#52b788', boxShadow: '0 0 8px rgba(82,183,136,0.8)', animation: 'pulseGlow 2s ease-in-out infinite alternate', display: 'inline-block' }} />
+                <span style={{ fontSize: '11px', fontWeight: 600, color: '#52b788', letterSpacing: '0.04em' }}>LIVE</span>
+              </div>
+            )}
+            <span className="material-symbols-outlined" style={{
+              fontSize: '20px', color: 'rgba(180,200,200,0.5)',
+              transform: calOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              transition: 'transform 0.25s ease'
+            }}>expand_more</span>
+          </div>
+        </button>
 
-        return (
-          <button
-            key={key}
-            onClick={() => setSelectedDay(key)}
-            title={key}
-            style={{
-              flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px',
-              padding: '4px 8px', borderRadius: '10px', cursor: 'pointer',
-              background: bg, border, color,
-              transition: 'all 0.2s ease', position: 'relative',
-              minWidth: '38px'
-            }}
-          >
-            <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', opacity: 0.8 }}>{isT ? 'Today' : dayLabel}</span>
-            <span style={{ fontSize: '15px', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{dateNum}</span>
-            {/* dot indicator for days with snapshot data */}
-            <span style={{
-              width: '4px', height: '4px', borderRadius: '50%',
-              background: hasSnap && !isT ? dotColor : 'transparent',
-              transition: 'background 0.2s'
-            }} />
-          </button>
-        )
-      })}
-    </div>
-  )
+        {/* ── Dropdown Calendar ── */}
+        {calOpen && (
+          <div style={{
+            position: 'absolute', top: 'calc(100% + 8px)', left: 0, right: 0,
+            background: 'linear-gradient(135deg, rgba(10,18,25,0.97) 0%, rgba(8,15,22,0.99) 100%)',
+            backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderTop: '1px solid rgba(255,255,255,0.14)',
+            borderRadius: '18px', padding: '16px',
+            boxShadow: '0 32px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06)',
+            zIndex: 100,
+            animation: 'fadeSlideDown 0.2s cubic-bezier(0.4,0,0.2,1)'
+          }}>
+            {/* Column headers */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
+              {DAY_LABELS.map(d => (
+                <div key={d} style={{ textAlign: 'center', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(180,200,200,0.3)', padding: '4px 0' }}>{d}</div>
+              ))}
+            </div>
+            {/* Compute grid: fill leading empty cells, then 14 days */}
+            {(() => {
+              const firstDay = days[0]
+              const leading = firstDay.getDay() // 0=Sun
+              const cells = [
+                ...Array(leading).fill(null),
+                ...days
+              ]
+              // Pad to complete last row
+              while (cells.length % 7 !== 0) cells.push(null)
+
+              return (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+                  {cells.map((d, i) => {
+                    if (!d) return <div key={`empty-${i}`} />
+                    const k = dateKey(d)
+                    const isT2 = k === todayStr
+                    const isSel2 = k === selectedDay
+                    const hasSnap = !!snapshotMap[k]
+
+                    let bg = 'transparent'
+                    let color = 'rgba(180,200,200,0.35)'
+                    let border = '1px solid transparent'
+
+                    if (isT2) {
+                      bg = isSel2 ? 'rgba(45,212,191,0.2)' : 'rgba(45,212,191,0.08)'
+                      color = '#2DD4BF'
+                      border = `1px solid ${isSel2 ? 'rgba(45,212,191,0.5)' : 'rgba(45,212,191,0.2)'}`
+                    } else if (isSel2) {
+                      bg = 'rgba(224,169,109,0.2)'
+                      color = '#e0a96d'
+                      border = '1px solid rgba(224,169,109,0.45)'
+                    } else if (hasSnap) {
+                      color = 'rgba(180,200,200,0.8)'
+                    }
+
+                    return (
+                      <button
+                        key={k}
+                        onClick={() => { setSelectedDay(k); setCalOpen(false) }}
+                        title={k}
+                        style={{
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                          gap: '1px', padding: '6px 4px', borderRadius: '10px', cursor: 'pointer',
+                          background: bg, border, color, transition: 'all 0.15s ease',
+                          position: 'relative', aspectRatio: '1',
+                        }}
+                      >
+                        <span style={{ fontSize: '13px', fontWeight: isSel2 || isT2 ? 700 : 500, fontVariantNumeric: 'tabular-nums' }}>{d.getDate()}</span>
+                        {hasSnap && !isT2 && (
+                          <span style={{ width: '3px', height: '3px', borderRadius: '50%', background: '#52b788', display: 'inline-block' }} />
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+              )
+            })()}
+
+            {/* Jump to today if not already there */}
+            {!isToday && (
+              <button
+                onClick={() => { setSelectedDay(todayStr); setCalOpen(false) }}
+                style={{
+                  marginTop: '12px', width: '100%', padding: '8px',
+                  background: 'rgba(45,212,191,0.08)', border: '1px solid rgba(45,212,191,0.2)',
+                  borderRadius: '10px', color: '#2DD4BF', fontSize: '13px', fontWeight: 600,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>today</span>
+                Back to Today
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '1400px', margin: '0 auto' }}>
 
-      {/* ── Date Navigator Strip ── */}
-      {renderDateStrip()}
+      {/* ── Date Header ── */}
+      {renderDateHeader()}
 
       {/* ── Status badge when viewing past day ── */}
       {!isToday && (
