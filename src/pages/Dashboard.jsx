@@ -172,11 +172,11 @@ export default function Dashboard() {
   // ── date strip ────────────────────────────────────────────────────────────
   const renderDateStrip = () => (
     <div style={{
-      display: 'flex', alignItems: 'center', gap: '6px',
+      display: 'inline-flex', alignItems: 'center', gap: '4px',
       background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(16px)',
       border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px',
-      padding: '10px 16px', overflowX: 'auto', scrollbarWidth: 'none',
-      marginBottom: '0'
+      padding: '6px 12px', overflowX: 'auto', scrollbarWidth: 'none',
+      marginBottom: '0', alignSelf: 'flex-start', width: 'fit-content'
     }}>
       <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'rgba(180,200,200,0.5)', flexShrink: 0, marginRight: '4px' }}>calendar_today</span>
       {days.map(d => {
@@ -214,11 +214,11 @@ export default function Dashboard() {
             onClick={() => setSelectedDay(key)}
             title={key}
             style={{
-              flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
-              padding: '6px 10px', borderRadius: '10px', cursor: 'pointer',
+              flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px',
+              padding: '4px 8px', borderRadius: '10px', cursor: 'pointer',
               background: bg, border, color,
               transition: 'all 0.2s ease', position: 'relative',
-              minWidth: '42px'
+              minWidth: '38px'
             }}
           >
             <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', opacity: 0.8 }}>{isT ? 'Today' : dayLabel}</span>

@@ -65,21 +65,7 @@ export default function AppShell() {
       {/* Main Content Area */}
       <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', zIndex: 1, position: 'relative' }}>
         
-        {/* Top Header */}
-        <header className="mobile-header" style={{ height: '72px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#f0f4f8', letterSpacing: '0.01em' }}>Momentumly</span>
-            <span style={{ color: 'rgba(255,255,255,0.1)' }}>|</span>
-            <span className="mobile-hide" style={{ fontSize: '13px', color: 'rgba(180, 200, 200, 0.6)' }}>V1</span>
-          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', padding: '6px 14px', borderRadius: '999px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '14px', color: '#52b788' }}>task_alt</span>
-              <span style={{ fontSize: '12px', fontWeight: 600, color: '#f0f4f8' }}>{todaysCompletionPct}% Today</span>
-            </div>
-          </div>
-        </header>
 
         {/* Page Outlet */}
         <div className="mobile-p-16" style={{ flex: 1, padding: '40px' }}>
