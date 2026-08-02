@@ -194,26 +194,79 @@ export function AppProvider({ children }) {
     updateDoc(doc(db, 'users', user.uid), { statuses: val })
   }, [user])
 
-  const updateKpiValue = useCallback((category, key, amount) => {
+  const updateKpiValue = useCallback(async (category, key, amount, targetDate) => {
     if (!user) return
-    const currentVal = Number(kpis[category][key].value) || 0
-    const newVal = Math.max(0, currentVal + amount)
-    
-    // Optimistic
-    setKpisState(prev => {
-      const next = { ...prev, [category]: { ...prev[category] } }
-      next[category][key].value = newVal
-      return next
-    })
+    const today = todayKey()
+    const tDate = targetDate || today
 
-    // Cloud sync
-    updateDoc(doc(db, 'users', user.uid), {
-      [`kpis.${category}.${key}.value`]: newVal
-    })
-  }, [user, kpis])
+    if (tDate === today) {
+      const currentVal = Number(kpis[category][key].value) || 0
+      const newVal = Math.max(0, currentVal + amount)
+      
+      // Optimistic
+      setKpisState(prev => {
+        const next = { ...prev, [category]: { ...prev[category] } }
+        next[category][key].value = newVal
+        return next
+      })
 
-  const setKpiValueExact = useCallback((category, key, exactValue) => {
+      // Cloud sync
+      updateDoc(doc(db, 'users', user.uid), {
+        [`kpis.${category}.${key}.value`]: newVal
+      })
+    } else {
+      // Historical update
+      const existingSnap = snapshots.find(s => s.date === tDate)
+      
+      if (existingSnap) {
+        const currentVal = Number(existingSnap.kpis[category][key].value) || 0
+        const newVal = Math.max(0, currentVal + amount)
+        
+        // Optimistic
+        setSnapshotsState(prev => prev.map(s => {
+          if (s.id === existingSnap.id) {
+            const nextKpis = { ...s.kpis, [category]: { ...s.kpis[category] } }
+            nextKpis[category][key].value = newVal
+            return { ...s, kpis: nextKpis }
+          }
+          return s
+        }))
+        
+        // Cloud
+        updateDoc(doc(db, 'users', user.uid, 'snapshots', existingSnap.id), {
+          [`kpis.${category}.${key}.value`]: newVal
+        })
+      } else {
+        // Create new snapshot for the past day with 0 values initialized from current kpis structure
+        const nextKpis = JSON.parse(JSON.stringify(kpis))
+        for (const cat in nextKpis) {
+          for (const k in nextKpis[cat]) {
+            nextKpis[cat][k].value = 0
+          }
+        }
+        const newVal = Math.max(0, amount)
+        nextKpis[category][key].value = newVal
+        
+        const rev = prospects.filter(p => p.status === 'Won').reduce((acc, p) => acc + Number(p.dealValue || 0), 0)
+        const activePros = prospects.filter(p => !['Won', 'Lost'].includes(p.status)).length
+        
+        const newDocRef = await addDoc(collection(db, 'users', user.uid, 'snapshots'), {
+          date: tDate,
+          kpis: nextKpis,
+          revenue: rev,
+          activeProspects: activePros
+        })
+        
+        setSnapshotsState(prev => [...prev, { id: newDocRef.id, date: tDate, kpis: nextKpis, revenue: rev, activeProspects: activePros }])
+      }
+    }
+  }, [user, kpis, snapshots, prospects])
+
+  const setKpiValueExact = useCallback(async (category, key, exactValue, targetDate) => {
     if (!user) return
+    const today = todayKey()
+    const tDate = targetDate || today
+
     let val = 0
     if (exactValue === '') {
       val = '' 
@@ -222,18 +275,60 @@ export function AppProvider({ children }) {
       val = isNaN(parsed) ? 0 : Math.max(0, parsed)
     }
 
-    setKpisState(prev => {
-      const next = { ...prev, [category]: { ...prev[category] } }
-      next[category][key].value = val
-      return next
-    })
-
-    if (val !== '') {
-      updateDoc(doc(db, 'users', user.uid), {
-        [`kpis.${category}.${key}.value`]: val
+    if (tDate === today) {
+      setKpisState(prev => {
+        const next = { ...prev, [category]: { ...prev[category] } }
+        next[category][key].value = val
+        return next
       })
+
+      if (val !== '') {
+        updateDoc(doc(db, 'users', user.uid), {
+          [`kpis.${category}.${key}.value`]: val
+        })
+      }
+    } else {
+      // Historical update
+      const existingSnap = snapshots.find(s => s.date === tDate)
+      
+      if (existingSnap) {
+        setSnapshotsState(prev => prev.map(s => {
+          if (s.id === existingSnap.id) {
+            const nextKpis = { ...s.kpis, [category]: { ...s.kpis[category] } }
+            nextKpis[category][key].value = val
+            return { ...s, kpis: nextKpis }
+          }
+          return s
+        }))
+        
+        if (val !== '') {
+          updateDoc(doc(db, 'users', user.uid, 'snapshots', existingSnap.id), {
+            [`kpis.${category}.${key}.value`]: val
+          })
+        }
+      } else {
+        const nextKpis = JSON.parse(JSON.stringify(kpis))
+        for (const cat in nextKpis) {
+          for (const k in nextKpis[cat]) {
+            nextKpis[cat][k].value = 0
+          }
+        }
+        nextKpis[category][key].value = val === '' ? 0 : val
+        
+        const rev = prospects.filter(p => p.status === 'Won').reduce((acc, p) => acc + Number(p.dealValue || 0), 0)
+        const activePros = prospects.filter(p => !['Won', 'Lost'].includes(p.status)).length
+        
+        const newDocRef = await addDoc(collection(db, 'users', user.uid, 'snapshots'), {
+          date: tDate,
+          kpis: nextKpis,
+          revenue: rev,
+          activeProspects: activePros
+        })
+        
+        setSnapshotsState(prev => [...prev, { id: newDocRef.id, date: tDate, kpis: nextKpis, revenue: rev, activeProspects: activePros }])
+      }
     }
-  }, [user])
+  }, [user, kpis, snapshots, prospects])
 
   const updateKpiTarget = useCallback((category, key, target, frequency) => {
     if (!user) return
