@@ -211,14 +211,13 @@ input[type="number"] {
   .app-container {
     height: auto;
     min-height: 100dvh;
-    overflow-x: clip;
-    overflow-y: visible;
+    overflow: clip;
   }
   .main-content { 
     overflow-y: visible; 
   }
   
-  .mobile-p-16 { padding: 16px !important; }
+  .mobile-p-16 { padding: 16px 16px 96px 16px !important; }
   .mobile-header { padding: 0 16px !important; }
   
   .mobile-modal-content { width: 95% !important; padding: 24px !important; }
