@@ -47,7 +47,7 @@ export default function Prospects() {
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: '16px', position: 'relative', zIndex: 10, background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
+      <div className="mobile-col" style={{ display: 'flex', gap: '16px', position: 'relative', zIndex: 10, background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
         <input 
           type="text" placeholder="Search name or company..." 
           value={search} onChange={e => setSearch(e.target.value)}
@@ -66,7 +66,7 @@ export default function Prospects() {
       </div>
 
       {/* Table */}
-      <div style={{ background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
+      <div style={{ background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', overflowX: 'auto', overflowY: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
             <tr style={{ background: 'rgba(255,255,255,0.02)', fontSize: '12px', color: 'rgba(180, 200, 200, 0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -121,7 +121,7 @@ export default function Prospects() {
       {/* Add Modal */}
       {showAdd && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div style={{ background: 'rgba(6, 13, 19, 0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '40px', width: '440px', boxShadow: '0 24px 64px rgba(0,0,0,0.4)', backdropFilter: 'blur(20px)' }}>
+          <div className="mobile-modal-content" style={{ background: 'rgba(6, 13, 19, 0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '40px', width: '440px', boxShadow: '0 24px 64px rgba(0,0,0,0.4)', backdropFilter: 'blur(20px)' }}>
             <h2 style={{ margin: '0 0 24px', fontSize: '20px', color: '#f0f4f8' }}>Add Prospect</h2>
             <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <input style={inputStyle} placeholder="Name *" required value={newProspect.name} onChange={e => setNewProspect({...newProspect, name: e.target.value})} />
@@ -150,7 +150,7 @@ export default function Prospects() {
       {/* Notes Modal */}
       {editingNotesId && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div style={{ background: 'rgba(6, 13, 19, 0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '40px', width: '500px', boxShadow: '0 24px 64px rgba(0,0,0,0.4)', backdropFilter: 'blur(20px)' }}>
+          <div className="mobile-modal-content" style={{ background: 'rgba(6, 13, 19, 0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '40px', width: '500px', boxShadow: '0 24px 64px rgba(0,0,0,0.4)', backdropFilter: 'blur(20px)' }}>
             <h2 style={{ margin: '0 0 24px', fontSize: '20px', color: '#f0f4f8', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span className="material-symbols-outlined" style={{ color: '#52b788', fontSize: '24px' }}>edit_note</span>
               Notes for {prospects.find(p => p.id === editingNotesId)?.name}

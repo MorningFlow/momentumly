@@ -47,7 +47,7 @@ export default function Settings() {
         <h2 style={{ fontSize: '16px', margin: 0, color: '#f0f4f8', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span className="material-symbols-outlined" style={{ color: '#e0a96d' }}>tune</span> General Options
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        <div className="mobile-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <label style={{ fontSize: '13px', color: 'rgba(180, 200, 200, 0.6)' }}>Currency Symbol</label>
             <input style={inputStyle} value={currency} onChange={e => setCurrency(e.target.value)} placeholder="$" />
@@ -109,7 +109,7 @@ export default function Settings() {
           <span className="material-symbols-outlined" style={{ color: '#d0bcff' }}>list_alt</span> Pipeline Customization
         </h2>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+        <div className="mobile-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
           {/* Channels */}
           <div>
             <h3 style={{ fontSize: '14px', color: 'rgba(180, 200, 200, 0.8)', marginBottom: '12px' }}>Lead Channels</h3>
@@ -154,11 +154,11 @@ export default function Settings() {
         <p style={{ fontSize: '13px', color: 'rgba(180, 200, 200, 0.6)', margin: 0 }}>
           Export your data for backup, or permanently delete everything on this device.
         </p>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <button onClick={exportCSV} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#f0f4f8', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="mobile-col" style={{ display: 'flex', gap: '16px' }}>
+          <button onClick={exportCSV} style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#f0f4f8', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>download</span> Export CSV
           </button>
-          <button onClick={clearAllData} style={{ background: 'rgba(255,180,171,0.1)', border: '1px solid rgba(255,180,171,0.2)', color: '#ffb4ab', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button onClick={clearAllData} style={{ flex: 1, background: 'rgba(255,180,171,0.1)', border: '1px solid rgba(255,180,171,0.2)', color: '#ffb4ab', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete_forever</span> Factory Reset
           </button>
         </div>
@@ -167,7 +167,7 @@ export default function Settings() {
       {/* Add KPI Modal */}
       {showAddKpi && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div style={{ background: 'rgba(6, 13, 19, 0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '40px', width: '440px', boxShadow: '0 24px 64px rgba(0,0,0,0.4)', backdropFilter: 'blur(20px)' }}>
+          <div className="mobile-modal-content" style={{ background: 'rgba(6, 13, 19, 0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '40px', width: '440px', boxShadow: '0 24px 64px rgba(0,0,0,0.4)', backdropFilter: 'blur(20px)' }}>
             <h2 style={{ margin: '0 0 24px', fontSize: '20px', color: '#f0f4f8' }}>Add New KPI</h2>
             <form onSubmit={(e) => {
               e.preventDefault()

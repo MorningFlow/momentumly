@@ -60,7 +60,7 @@ export default function Analytics() {
       </div>
 
       {/* Revenue Section */}
-      <section style={{ background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '32px', display: 'flex', gap: '40px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
+      <section className="mobile-col mobile-p-16" style={{ background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '32px', display: 'flex', gap: '40px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
         <div style={{ width: '250px' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#f0f4f8', marginBottom: '8px' }}>Revenue Pipeline</h2>
           <p style={{ fontSize: '13px', color: 'rgba(180, 200, 200, 0.6)', marginBottom: '32px', lineHeight: '1.5' }}>Track closed won deals against your monthly target.</p>
@@ -112,9 +112,9 @@ export default function Analytics() {
       </section>
 
       {/* KPI Current Progress (Bar Chart style view) */}
-      <section style={{ background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '32px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
+      <section className="mobile-p-16" style={{ background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '32px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
         <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#f0f4f8', marginBottom: '24px' }}>Current KPI Completion</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+        <div className="mobile-grid-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
           {allKpis.map(kpi => {
             const pct = Math.min(100, Math.round((kpi.value / kpi.target) * 100))
             const color = kpi.category === 'sales' ? 'linear-gradient(90deg, #6d3bd7, #8b5cf6)' : kpi.category === 'content' ? 'linear-gradient(90deg, #e0a96d, #f5bd5c)' : 'linear-gradient(90deg, #44e2cd, #52b788)'

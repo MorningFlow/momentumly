@@ -77,7 +77,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', maxWidth: '1400px', margin: '0 auto', alignItems: 'flex-start', position: 'relative' }}>
+    <div className="mobile-grid-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', maxWidth: '1400px', margin: '0 auto', alignItems: 'flex-start', position: 'relative' }}>
       
       {/* COLUMN 1 (Left): Sales */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -99,7 +99,7 @@ export default function Dashboard() {
             <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#52b788' }}>monitoring</span>
             Top Summary
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="mobile-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             {[
               { label: 'Revenue', value: `${currency}${revenue.toLocaleString()}`, color: '#52b788', icon: 'payments' },
               { label: 'Clients Won', value: clientsWonCount, color: '#e0a96d', icon: 'verified' },

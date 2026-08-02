@@ -25,7 +25,7 @@ export default function Login() {
       <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '70vw', height: '70vw', background: 'radial-gradient(circle, rgba(50, 140, 100, 0.25) 0%, rgba(0,0,0,0) 60%)', pointerEvents: 'none', zIndex: 0 }} />
       <div style={{ position: 'absolute', top: '30%', left: '40%', width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(20, 70, 120, 0.2) 0%, rgba(0,0,0,0) 60%)', pointerEvents: 'none', zIndex: 0 }} />
 
-      <GlowCard glowColor="teal" style={{ 
+      <GlowCard glowColor="teal" className="mobile-modal-content" style={{ 
         width: '400px', padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', zIndex: 10,
         background: 'rgba(6, 13, 19, 0.6)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', 
         border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', boxShadow: '0 24px 64px rgba(0,0,0,0.5)'
