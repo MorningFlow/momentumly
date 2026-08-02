@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useApp } from '../store/appStore'
 import { CustomSelect } from '../components/ui/CustomSelect'
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 
 export default function Settings() {
-  const { currency, setCurrency, revenueTarget, setRevenueTarget, channels, setChannels, statuses, setStatuses, clearAllData, kpis, updateKpiTarget, prospects, addKpi } = useApp()
+  const { currency, setCurrency, revenueTarget, setRevenueTarget, channels, setChannels, statuses, setStatuses, clearAllData, kpis, updateKpiTarget, prospects, addKpi, reorderKpis } = useApp()
 
   const [newChannel, setNewChannel] = useState('')
   const [newStatus, setNewStatus] = useState('')
@@ -33,6 +34,17 @@ export default function Settings() {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+  }
+
+  const handleDragEnd = (result, category, metrics) => {
+    if (!result.destination) return
+    const items = Object.entries(metrics).sort(([, a], [, b]) => (a.order ?? 999) - (b.order ?? 999) || a.label.localeCompare(b.label))
+    const reorderedKeys = items.map(([k]) => k)
+    
+    const [moved] = reorderedKeys.splice(result.source.index, 1)
+    reorderedKeys.splice(result.destination.index, 0, moved)
+
+    reorderKpis(category, reorderedKeys)
   }
 
   return (
@@ -73,33 +85,56 @@ export default function Settings() {
           {Object.entries(kpis).map(([category, metrics]) => (
             <div key={category}>
               <h3 style={{ fontSize: '14px', color: 'rgba(180, 200, 200, 0.8)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>{category}</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {Object.entries(metrics)
-                  .sort(([, a], [, b]) => a.label.localeCompare(b.label))
-                  .map(([key, metric]) => (
-                  <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '12px' }}>
-                    <div style={{ fontSize: '14px', color: '#f0f4f8' }}>{metric.label}</div>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                      <input 
-                        type="number" 
-                        style={{ ...inputStyle, width: '80px', padding: '8px' }} 
-                        value={metric.target} 
-                        onChange={e => updateKpiTarget(category, key, e.target.value, metric.frequency)} 
-                      />
-                      <CustomSelect 
-                        style={{ ...inputStyle, padding: '8px 12px', width: '120px' }} 
-                        value={metric.frequency} 
-                        onChange={v => updateKpiTarget(category, key, metric.target, v)}
-                        options={[
-                          { label: 'Daily', value: 'daily' },
-                          { label: 'Weekly', value: 'weekly' },
-                          { label: 'Monthly', value: 'monthly' }
-                        ]}
-                      />
+              <DragDropContext onDragEnd={(result) => handleDragEnd(result, category, metrics)}>
+                <Droppable droppableId={`droppable-${category}`}>
+                  {(provided) => (
+                    <div ref={provided.innerRef} {...provided.droppableProps} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {Object.entries(metrics)
+                        .sort(([, a], [, b]) => (a.order ?? 999) - (b.order ?? 999) || a.label.localeCompare(b.label))
+                        .map(([key, metric], index) => (
+                        <Draggable key={key} draggableId={key} index={index}>
+                          {(provided, snapshot) => (
+                            <div 
+                              ref={provided.innerRef} 
+                              {...provided.draggableProps} 
+                              style={{ 
+                                ...provided.draggableProps.style,
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', 
+                                background: snapshot.isDragging ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.2)', 
+                                borderRadius: '12px',
+                                boxShadow: snapshot.isDragging ? '0 8px 32px rgba(0,0,0,0.3)' : 'none'
+                              }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <span {...provided.dragHandleProps} className="material-symbols-outlined" style={{ color: 'rgba(255,255,255,0.2)', cursor: 'grab', fontSize: '20px' }}>drag_indicator</span>
+                                <div style={{ fontSize: '14px', color: '#f0f4f8' }}>{metric.label}</div>
+                              </div>
+                              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                <input 
+                                  type="number" 
+                                  style={{ ...inputStyle, width: '80px', padding: '8px' }} 
+                                  value={metric.target} 
+                                  onChange={e => updateKpiTarget(category, key, e.target.value, metric.frequency)} 
+                                />
+                                <CustomSelect 
+                                  style={{ ...inputStyle, padding: '8px 12px', width: '120px' }} 
+                                  value={metric.frequency} 
+                                  onChange={v => updateKpiTarget(category, key, metric.target, v)}
+                                  options={[
+                                    { label: 'Daily', value: 'daily' },
+                                    { label: 'Weekly', value: 'weekly' },
+                                    { label: 'Monthly', value: 'monthly' }
+                                  ]}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
                     </div>
-                  </div>
-                ))}
-              </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
             </div>
           ))}
         </div>

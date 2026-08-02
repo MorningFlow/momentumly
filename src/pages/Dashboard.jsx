@@ -27,7 +27,7 @@ export default function Dashboard() {
           boxShadow: '0 24px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)' 
         }}>
           {Object.entries(metrics)
-            .sort(([, a], [, b]) => a.label.localeCompare(b.label))
+            .sort(([, a], [, b]) => (a.order ?? 999) - (b.order ?? 999) || a.label.localeCompare(b.label))
             .map(([key, metric], index, array) => {
             const isLast = index === array.length - 1
             const progressPct = Math.min(100, Math.round((metric.value / metric.target) * 100))

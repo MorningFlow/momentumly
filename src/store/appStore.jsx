@@ -24,23 +24,23 @@ function getStartOfMonth(date = new Date()) {
 // ── defaults ──────────────────────────────────────────────────────────────────
 const DEFAULT_KPIS = {
   sales: {
-    linkedinConnections: { label: 'LinkedIn Connections', value: 0, target: 20, frequency: 'daily' },
-    linkedinConversations: { label: 'LinkedIn Conversations', value: 0, target: 10, frequency: 'daily' },
-    coldEmails: { label: 'Cold Emails', value: 0, target: 50, frequency: 'daily' },
-    agencyOutreach: { label: 'Agency Outreach', value: 0, target: 5, frequency: 'daily' },
-    followUps: { label: 'Follow-ups', value: 0, target: 10, frequency: 'daily' },
-    discoveryCalls: { label: 'Discovery Calls', value: 0, target: 3, frequency: 'weekly' },
-    proposalsSent: { label: 'Proposals Sent', value: 0, target: 2, frequency: 'weekly' },
-    dealsClosed: { label: 'Deals Closed', value: 0, target: 4, frequency: 'monthly' }
+    linkedinConnections: { label: 'LinkedIn Connections', value: 0, target: 20, frequency: 'daily', order: 0 },
+    linkedinConversations: { label: 'LinkedIn Conversations', value: 0, target: 10, frequency: 'daily', order: 1 },
+    coldEmails: { label: 'Cold Emails', value: 0, target: 50, frequency: 'daily', order: 2 },
+    agencyOutreach: { label: 'Agency Outreach', value: 0, target: 5, frequency: 'daily', order: 3 },
+    followUps: { label: 'Follow-ups', value: 0, target: 10, frequency: 'daily', order: 4 },
+    discoveryCalls: { label: 'Discovery Calls', value: 0, target: 3, frequency: 'weekly', order: 5 },
+    proposalsSent: { label: 'Proposals Sent', value: 0, target: 2, frequency: 'weekly', order: 6 },
+    dealsClosed: { label: 'Deals Closed', value: 0, target: 4, frequency: 'monthly', order: 7 }
   },
   content: {
-    linkedinPosts: { label: 'LinkedIn Posts', value: 0, target: 1, frequency: 'daily' },
-    videosPublished: { label: 'Videos Published', value: 0, target: 2, frequency: 'weekly' }
+    linkedinPosts: { label: 'LinkedIn Posts', value: 0, target: 1, frequency: 'daily', order: 0 },
+    videosPublished: { label: 'Videos Published', value: 0, target: 2, frequency: 'weekly', order: 1 }
   },
   build: {
-    caseStudies: { label: 'Case Studies', value: 0, target: 1, frequency: 'monthly' },
-    offersCompleted: { label: 'Offers Completed', value: 0, target: 1, frequency: 'monthly' },
-    websiteProgress: { label: 'Website Progress (%)', value: 0, target: 100, frequency: 'monthly' }
+    caseStudies: { label: 'Case Studies', value: 0, target: 1, frequency: 'monthly', order: 0 },
+    offersCompleted: { label: 'Offers Completed', value: 0, target: 1, frequency: 'monthly', order: 1 },
+    websiteProgress: { label: 'Website Progress (%)', value: 0, target: 100, frequency: 'monthly', order: 2 }
   }
 }
 
@@ -252,10 +252,35 @@ export function AppProvider({ children }) {
     while (kpis[category][key]) {
       key += Math.floor(Math.random() * 10)
     }
+    
+    // Calculate new order
+    const existing = Object.values(kpis[category])
+    const maxOrder = existing.length > 0 ? Math.max(...existing.map(k => k.order || 0)) : -1
+
     updateDoc(doc(db, 'users', user.uid), {
-      [`kpis.${category}.${key}`]: { label, value: 0, target: Number(target) || 1, frequency }
+      [`kpis.${category}.${key}`]: { label, value: 0, target: Number(target) || 1, frequency, order: maxOrder + 1 }
     })
   }, [user, kpis])
+
+  const reorderKpis = useCallback((category, newOrderArray) => {
+    if (!user) return
+    
+    setKpisState(prev => {
+      const next = { ...prev, [category]: { ...prev[category] } }
+      newOrderArray.forEach((key, index) => {
+        if (next[category][key]) {
+          next[category][key].order = index
+        }
+      })
+      return next
+    })
+
+    const updates = {}
+    newOrderArray.forEach((key, index) => {
+      updates[`kpis.${category}.${key}.order`] = index
+    })
+    updateDoc(doc(db, 'users', user.uid), updates)
+  }, [user])
 
   // Prospect Actions
   const addProspect = useCallback((prospect) => {
@@ -321,7 +346,7 @@ export function AppProvider({ children }) {
       kpis, prospects, snapshots, revenueTarget, currency, channels, statuses,
       revenue, activeProspectsCount, clientsWonCount, todaysCompletionPct,
       setRevenueTarget, setCurrency, setChannels, setStatuses,
-      updateKpiValue, setKpiValueExact, updateKpiTarget, addKpi,
+      updateKpiValue, setKpiValueExact, updateKpiTarget, addKpi, reorderKpis,
       addProspect, updateProspect, deleteProspect, clearAllData, logout
     }}>
       {children}
