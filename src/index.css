@@ -211,10 +211,11 @@ input[type="number"] {
   .app-container {
     height: auto;
     min-height: 100vh;
-    overflow: visible;
+    overflow-x: clip;
+    overflow-y: visible;
   }
   .main-content { 
-    padding-bottom: 90px !important; 
+    padding-bottom: 80px !important; 
     overflow-y: visible; 
   }
   
