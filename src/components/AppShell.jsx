@@ -82,7 +82,7 @@ export default function AppShell() {
         </header>
 
         {/* Page Outlet */}
-        <div className="mobile-p-16" style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
+        <div className="mobile-p-16" style={{ flex: 1, padding: '40px' }}>
           <Outlet />
         </div>
       </main>

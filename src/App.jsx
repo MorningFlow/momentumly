@@ -8,6 +8,15 @@ import Settings from './pages/Settings'
 import Login from './pages/Login'
 
 export default function App() {
+  // Force clear SW cache for development updates
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      for (let registration of registrations) {
+        registration.unregister();
+      }
+    });
+  }
+
   const { user, authLoading, dataLoading } = useApp()
 
   if (authLoading || (user && dataLoading)) {
