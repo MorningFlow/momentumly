@@ -31,7 +31,7 @@ export default function AppShell() {
         </div>
 
         {/* Links */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', padding: '0 12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', padding: '0 12px', flex: 1 }}>
           {NAV_LINKS.map(link => (
             <NavLink key={link.path} to={link.path} style={({ isActive }) => ({
               width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -48,6 +48,17 @@ export default function AppShell() {
               )}
             </NavLink>
           ))}
+        </div>
+
+        {/* Logout */}
+        <div style={{ padding: '0 12px', width: '100%' }}>
+          <button onClick={useApp().logout} style={{
+            width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s ease',
+            color: '#ffb4ab', background: 'transparent', border: 'none',
+          }} title="Sign Out" className="glass-panel-hover">
+            <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>logout</span>
+          </button>
         </div>
       </nav>
 
