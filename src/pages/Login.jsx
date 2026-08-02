@@ -8,10 +8,17 @@ const ALLOWED_EMAIL = 'morningflow10@gmail.com'
 export default function Login() {
   const handleLogin = async () => {
     try {
-      // Mobile browsers and PWAs often block popups. Using redirect is much more reliable.
-      await signInWithRedirect(auth, googleProvider)
+      const result = await signInWithPopup(auth, googleProvider)
+      if (result.user.email !== ALLOWED_EMAIL) {
+        alert(`Access Denied. ${result.user.email} is not authorized for this workspace.`)
+        await signOut(auth)
+      }
     } catch (error) {
-      console.error("Login failed", error)
+      console.warn("Popup login failed, attempting redirect...", error)
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+        // Fallback for strict mobile browsers
+        await signInWithRedirect(auth, googleProvider)
+      }
     }
   }
 
