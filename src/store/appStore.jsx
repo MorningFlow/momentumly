@@ -105,15 +105,24 @@ export function AppProvider({ children }) {
           lastDates: { daily: todayKey(), weekly: getStartOfWeek(), monthly: getStartOfMonth() }
         })
       }
+    }, (error) => {
+      console.error("Firestore user sync error:", error)
+      setDataLoading(false)
     })
 
     const unsubProspects = onSnapshot(prospectsRef, (snap) => {
       setProspectsState(snap.docs.map(d => ({ id: d.id, ...d.data() })))
+    }, (error) => {
+      console.error("Firestore prospects error:", error)
+      setDataLoading(false)
     })
 
     const unsubSnapshots = onSnapshot(snapshotsRef, (snap) => {
       setSnapshotsState(snap.docs.map(d => ({ id: d.id, ...d.data() })))
       setDataLoading(false) // Data is ready!
+    }, (error) => {
+      console.error("Firestore snapshots error:", error)
+      setDataLoading(false)
     })
 
     return () => {
