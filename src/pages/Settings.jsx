@@ -10,6 +10,9 @@ export default function Settings() {
   const [newStatus, setNewStatus] = useState('')
   const [showAddKpi, setShowAddKpi] = useState(false)
   const [newKpi, setNewKpi] = useState({ category: 'sales', label: '', target: 1, frequency: 'daily' })
+  const [isDragging, setIsDragging] = useState(false)
+
+  const CATEGORY_ORDER = ['sales', 'content', 'build']
 
   const inputStyle = {
     background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
@@ -17,9 +20,12 @@ export default function Settings() {
     outline: 'none', fontFamily: 'Inter', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
   }
   const sectionStyle = {
-    background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', 
+    background: 'rgba(255, 255, 255, 0.03)', 
+    backdropFilter: isDragging ? 'none' : 'blur(16px)', 
+    WebkitBackdropFilter: isDragging ? 'none' : 'blur(16px)', 
     padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-    display: 'flex', flexDirection: 'column', gap: '20px'
+    display: 'flex', flexDirection: 'column', gap: '20px',
+    transition: 'backdrop-filter 0.2s'
   }
 
   const exportCSV = () => {
@@ -37,6 +43,7 @@ export default function Settings() {
   }
 
   const handleDragEnd = (result, category, metrics) => {
+    setIsDragging(false)
     if (!result.destination) return
     const items = Object.entries(metrics).sort(([, a], [, b]) => (a.order ?? 999) - (b.order ?? 999) || a.label.localeCompare(b.label))
     const reorderedKeys = items.map(([k]) => k)
@@ -45,6 +52,10 @@ export default function Settings() {
     reorderedKeys.splice(result.destination.index, 0, moved)
 
     reorderKpis(category, reorderedKeys)
+  }
+
+  const handleDragStart = () => {
+    setIsDragging(true)
   }
 
   return (
@@ -82,10 +93,12 @@ export default function Settings() {
           </button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {Object.entries(kpis).map(([category, metrics]) => (
+          {Object.entries(kpis)
+            .sort(([a], [b]) => CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b))
+            .map(([category, metrics]) => (
             <div key={category}>
               <h3 style={{ fontSize: '14px', color: 'rgba(180, 200, 200, 0.8)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>{category}</h3>
-              <DragDropContext onDragEnd={(result) => handleDragEnd(result, category, metrics)}>
+              <DragDropContext onDragStart={handleDragStart} onDragEnd={(result) => handleDragEnd(result, category, metrics)}>
                 <Droppable droppableId={`droppable-${category}`}>
                   {(provided) => (
                     <div ref={provided.innerRef} {...provided.droppableProps} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
