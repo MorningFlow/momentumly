@@ -1,4 +1,5 @@
-import { signInWithPopup, signOut } from 'firebase/auth'
+import { useEffect } from 'react'
+import { signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase/config'
 import { GlowCard } from '../components/ui/spotlight-card'
 
@@ -7,15 +8,21 @@ const ALLOWED_EMAIL = 'morningflow10@gmail.com'
 export default function Login() {
   const handleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider)
-      if (result.user.email !== ALLOWED_EMAIL) {
-        alert(`Access Denied. ${result.user.email} is not authorized for this workspace.`)
-        await signOut(auth)
-      }
+      // Mobile browsers and PWAs often block popups. Using redirect is much more reliable.
+      await signInWithRedirect(auth, googleProvider)
     } catch (error) {
       console.error("Login failed", error)
     }
   }
+
+  // Handle redirect result to show alert if unauthorized
+  useEffect(() => {
+    getRedirectResult(auth).then((result) => {
+      if (result && result.user && result.user.email !== ALLOWED_EMAIL) {
+        alert(`Access Denied. ${result.user.email} is not authorized for this workspace.`)
+      }
+    }).catch(console.error)
+  }, [])
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'linear-gradient(135deg, #051417 0%, #0b2229 50%, #04090b 100%)', color: '#f0f4f8', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
