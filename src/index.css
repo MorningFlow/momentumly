@@ -66,13 +66,17 @@
   box-sizing: border-box;
 }
 
+html {
+  overscroll-behavior: none;
+}
+
 body {
   font-family: "Inter", sans-serif;
   background-color: #0a0e12;
   color: #e0e2e8;
   min-height: 100vh;
   overflow-x: hidden;
-  overscroll-behavior-y: none;
+  overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -192,7 +196,7 @@ input[type="number"] {
     border-top: 1px solid rgba(255,255,255,0.08); z-index: 50; justify-content: space-around; align-items: center; padding: 0 16px;
   }
   
-  .main-content { padding-bottom: 90px !important; overflow-y: auto; }
+  .main-content { padding-bottom: 90px !important; overflow-y: auto; overscroll-behavior: none; }
   
   .mobile-p-16 { padding: 16px !important; }
   .mobile-header { padding: 0 16px !important; }
