@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth'
+import { signInWithPopup, signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase/config'
 import { GlowCard } from '../components/ui/spotlight-card'
 
