@@ -63,7 +63,7 @@ export default function AppShell() {
       </nav>
 
       {/* Main Content Area */}
-      <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowX: 'hidden', zIndex: 1, position: 'relative' }}>
+      <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', zIndex: 1, position: 'relative' }}>
         
         {/* Top Header */}
         <header className="mobile-header" style={{ height: '72px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
